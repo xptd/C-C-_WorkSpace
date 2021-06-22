@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
     {
         err_handle("listen err\r\n");
     }
+    dump_addrinfo(&server_addr);
     clnt_addr_sz = sizeof(clnt_addr);
     for (i = 0; i < CLIENT_NUM; i++)
     {
