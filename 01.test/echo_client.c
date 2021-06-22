@@ -16,7 +16,9 @@ int main(int argc, char *argv[])
     int clnt_sock = -1;
     struct sockaddr_in server_addr;
     char buf[BUFSIZ];
-    int str_len = 0;
+    int send_len = 0;
+    int rec_cnt = 0;
+    int rec_len = 0;
     if (argc < 3)
     {
         fprintf(stdout, "Usage: %s <server_ip> <server_port>\r\n", argv[0]);
@@ -53,9 +55,21 @@ int main(int argc, char *argv[])
         {
             break;
         }
-        write(clnt_sock, buf, strlen(buf));
-        str_len = read(clnt_sock, buf, BUFSIZE - 1);
-        buf[str_len] = 0;
+        send_len = write(clnt_sock, buf, strlen(buf));
+        if (send_len == -1)
+        {
+            err_handle("write() err\r\n");
+        }
+        while (rec_len < send_len)
+        {
+            rec_cnt = read(clnt_sock, &buf[rec_len], BUFSIZE - 1);
+            if (rec_cnt == -1)
+            {
+                err_handle("read() err\r\n");
+            }
+            rec_len += rec_cnt;
+        }
+        buf[rec_len] = 0;
         fprintf(stdout, "Message from server:%s", buf);
     }
     close(clnt_sock);
